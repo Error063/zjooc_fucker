@@ -106,9 +106,12 @@ for page in range(1, total_page + 1):
                                     'checkTimeout': 'true'
                                 }
                             print(session.get('https://www.zjooc.cn/ajax',
-                                              params=request_params, headers={"Signcheck": utils.calculateMd5(),
-                                                                              "Timedate": str(
-                                                                                  int(time.time() * 1000))}).text)
+                                              params=request_params,
+                                              headers={
+                                                  "Signcheck": utils.calculateMd5(),
+                                                  "Timedate": str(int(time.time() * 1000))
+                                                }
+                                              ).text)
                     except:
                         print(f"Error: {get_video_progress.text}\n")
 

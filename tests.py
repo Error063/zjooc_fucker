@@ -78,12 +78,12 @@ while True:
     if course_list.json()['data']:
         for course in course_list.json()['data']:
             print(f'{course["id"]}: {course["name"]}')
-            if not course['currentBatch']:
+            if time.time() >= utils.convertToUnixTimestamp(course['endDate']):
                 print("Expired course! Stop")
                 break
             else:
                 course_id = course['id']
-                batchKey = course['batchKey']
+                batchKey = course['batchId']
                 while True:
                     query_test_papers = session.get(
                         "https://www.zjooc.cn/ajax",
