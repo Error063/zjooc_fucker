@@ -1,2 +1,4 @@
 ddddocr
 requests
+python-dateutil
+pillow~=1.9.0

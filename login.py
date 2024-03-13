@@ -1,3 +1,4 @@
+import json
 import time
 
 import ddddocr
@@ -6,9 +7,11 @@ import base64
 
 import utils
 
-username = '15158132138'
-password = '12345AaBb'
-total_page = 1
+with open('account.json') as f:
+    account = json.load(f)
+    username = account['username']
+    password = account['password']
+    total_page = account['totalPage']
 
 session = requests.session()
 app_key = '1ddadc7d-6f0a-4eb0-b844-24dd28e33e74'
@@ -33,6 +36,7 @@ login_form = {
 }
 
 do_login = session.post('https://centro.zjlll.net/login/doLogin', data=login_form, verify=False)
+print(do_login.text)
 authorization_code = do_login.json()['authorization_code']
 
 session.get(f'https://www.zjooc.cn/login?time={utils.generateRandomStringWithTimestamp(32)}')
