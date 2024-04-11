@@ -1,4 +1,6 @@
 import json
+import pprint
+import sys
 import time
 
 import ddddocr
@@ -82,104 +84,111 @@ while True:
         for course in course_list.json()['data']:
             print(f'{course["id"]}: {course["name"]}')
             if time.time() >= utils.convertToUnixTimestamp(course['endDate']):
-                print("Expired course! Stop")
+                print("Expired course! Stop", file=sys.stderr)
                 break
             else:
                 course_id = course['id']
                 batchKey = course['batchId']
-                page_count = 0
-                while True:
-                    page_count += 1
-                    query_test_papers = session.get(
-                        "https://www.zjooc.cn/ajax",
-                        params={
-                            "time": utils.generateRandomStringWithTimestamp(32),
-                            "service": "/tkksxt/api/admin/paper/student/page",
-                            "params[pageNo]": f"{page_count}",
-                            "params[pageSize]": "20",
-                            "params[paperType]": "1",
-                            "params[courseId]": course_id,
-                            "params[keyword]": "",
-                            "params[processStatus]": "",
-                            "params[batchKey]": batchKey,
-                            "checkTimeout": "true"
-                        },
-                        headers={
-                            "Referer": referer,
-                            "Signcheck": utils.calculateMd5(),
-                            "Timedate": str(int(time.time() * 1000))
-                        }
-                    )
-                    print(query_test_papers.json())
-                    if query_test_papers.json()['data']:
-                        for test_paper in query_test_papers.json()['data']:
-                            print(f'{test_paper["paperId"]}: {test_paper["paperName"]}')
-                            class_id = test_paper["classId"]
-                            paper_id = test_paper["paperId"]
-
-                            if test_paper['allowCount'] <= test_paper['testCount']:
-                                print("Test over tries! Pass")
-                                continue
-
-                            get_test_paper = session.get(
-                                "https://www.zjooc.cn/ajax",
-                                params={
-                                    "time": utils.generateRandomStringWithTimestamp(32),
-                                    "service": "/tkksxt/api/admin/paper/getPaperInfo",
-                                    "params[paperId]": paper_id,
-                                    "params[courseId]": course_id,
-                                    "params[classId]": class_id,
-                                    "params[batchKey]": batchKey,
-                                    "checkTimeout": "true"
-                                },
-                                headers={
-                                    "Referer": referer,
-                                    "Signcheck": utils.calculateMd5(),
-                                    "Timedate": str(int(time.time() * 1000))
-                                }
-                            ).json()
-
-                            answer_form = {
-                                    "service": "/tkksxt/api/student/score/sendSubmitAnswer",
-                                    "body": "true",
-                                    "params[batchKey]": batchKey,
-                                    "params[id]": paper_id,
-                                    "params[stuId]": user_id,
-                                    "params[clazzId]": get_test_paper['data']["classId"],
-                                    "params[scoreId]": get_test_paper['data']["scoreId"]
+                for paper_type in range(1, 3):
+                    print(f"Paper Type: {paper_type}")
+                    page_count = 0
+                    while True:
+                        page_count += 1
+                        query_test_papers = session.get(
+                            "https://www.zjooc.cn/ajax",
+                            params={
+                                "time": utils.generateRandomStringWithTimestamp(32),
+                                "service": "/tkksxt/api/admin/paper/student/page",
+                                "params[pageNo]": f"{page_count}",
+                                "params[pageSize]": "20",
+                                "params[paperType]": f"{paper_type}",
+                                "params[courseId]": course_id,
+                                "params[keyword]": "",
+                                "params[processStatus]": "",
+                                "params[batchKey]": batchKey,
+                                "checkTimeout": "true"
+                            },
+                            headers={
+                                "Referer": referer,
+                                "Signcheck": utils.calculateMd5(),
+                                "Timedate": str(int(time.time() * 1000))
                             }
+                        )
+                        print(query_test_papers.json())
+                        if query_test_papers.json()['data']:
+                            for test_paper in query_test_papers.json()['data']:
+                                print(f'{test_paper["paperId"]}: {test_paper["paperName"]}')
+                                class_id = test_paper["classId"]
+                                paper_id = test_paper["paperId"]
 
-                            question_count = 0
+                                if paper_type == 1 and test_paper['allowCount'] <= test_paper['testCount']:
+                                    print("Test over tries! Pass")
+                                    continue
 
-                            for question in get_test_paper['data']["paperSubjectList"]:
-                                question_id = question['id']
-                                answer = question['rightAnswer']
-                                subject_type = question['subjectType']
-                                answer_form[f"params[paperSubjectList][{question_count}][id]"] = question_id
-                                answer_form[f"params[paperSubjectList][{question_count}][subjectType]"] = subject_type
-                                answer_form[f"params[paperSubjectList][{question_count}][answer]"] = answer
-                                question_count += 1
+                                get_test_paper = session.get(
+                                    "https://www.zjooc.cn/ajax",
+                                    params={
+                                        "time": utils.generateRandomStringWithTimestamp(32),
+                                        "service": "/tkksxt/api/admin/paper/getPaperInfo",
+                                        "params[paperId]": paper_id,
+                                        "params[courseId]": course_id,
+                                        "params[classId]": class_id,
+                                        "params[batchKey]": batchKey,
+                                        "checkTimeout": "true"
+                                    },
+                                    headers={
+                                        "Referer": referer,
+                                        "Signcheck": utils.calculateMd5(),
+                                        "Timedate": str(int(time.time() * 1000))
+                                    }
+                                ).json()
 
-                            submit_paper = session.post(
-                                f"https://www.zjooc.cn/ajax",
-                                params={
-                                    "time": utils.generateRandomStringWithTimestamp(32),
-                                    "checkTimeout": "true"
-                                },
-                                data=answer_form,
-                                headers={
-                                    "Referer": referer,
-                                    "Signcheck": utils.calculateMd5(),
-                                    "Timedate": str(int(time.time() * 1000))
-                                }
-                            )
+                                if get_test_paper['data']:
 
-                            print("OK!" if submit_paper.json()['success'] else "ERR!")
-                    if query_test_papers.json()['page']['end']:
-                        print("No more tests! Stop")
-                        break
+                                    answer_form = {
+                                        "service": "/tkksxt/api/student/score/sendSubmitAnswer",
+                                        "body": "true",
+                                        "params[batchKey]": batchKey,
+                                        "params[id]": paper_id,
+                                        "params[stuId]": user_id,
+                                        # "params[clazzId]": get_test_paper['data']["classId"],
+                                        "params[clazzId]": class_id,
+                                        "params[scoreId]": get_test_paper['data']["scoreId"]
+                                    }
+
+                                    question_count = 0
+
+                                    for question in get_test_paper['data']["paperSubjectList"]:
+                                        question_id = question['id']
+                                        answer = question['rightAnswer']
+                                        subject_type = question['subjectType']
+                                        answer_form[f"params[paperSubjectList][{question_count}][id]"] = question_id
+                                        answer_form[
+                                            f"params[paperSubjectList][{question_count}][subjectType]"] = subject_type
+                                        answer_form[f"params[paperSubjectList][{question_count}][answer]"] = answer
+                                        question_count += 1
+
+                                    submit_paper = session.post(
+                                        f"https://www.zjooc.cn/ajax",
+                                        params={
+                                            "time": utils.generateRandomStringWithTimestamp(32),
+                                            "checkTimeout": "true"
+                                        },
+                                        data=answer_form,
+                                        headers={
+                                            "Referer": referer,
+                                            "Signcheck": utils.calculateMd5(),
+                                            "Timedate": str(int(time.time() * 1000))
+                                        }
+                                    )
+                                    print("OK!" if submit_paper.json()['success'] else "ERR!")
+                                else:
+                                    print("Empty data!", file=sys.stderr)
+                        if query_test_papers.json()['page']['end']:
+                            print("No more tests! Stop", file=sys.stderr)
+                            break
 
 
     if course_list.json()['page']['end']:
-        print("No more course! Stop")
+        print("No more course! Stop", file=sys.stderr)
         break
