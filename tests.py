@@ -54,6 +54,7 @@ session.get(
 user = session.get(f"https://www.zjooc.cn/ucenter/getUser?time={utils.generateRandomStringWithTimestamp(32)}",
                    headers={'Referer': referer}, verify=False)
 
+print(user.text)
 user_id = user.json()['data']['user']['id']
 
 while True:
