@@ -10,4 +10,5 @@ get_logger = logging.getLogger
 
 if __name__ == '__main__':
     # 记录日志
-    logger = get_logger
+    logger = get_logger()
+    logger.debug("A debug message")

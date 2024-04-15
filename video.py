@@ -3,10 +3,12 @@ import time
 
 import ddddocr
 import requests
+from requests import Session
 import base64
 
 import utils
 from logger import get_logger
+from constants import *
 
 logger = get_logger(__name__)
 
@@ -16,13 +18,14 @@ with open('account.json') as f:
     password = account['password']
     total_page = account['totalPage']
 
-session = requests.session()
-app_key = '1ddadc7d-6f0a-4eb0-b844-24dd28e33e74'
+# 开启会话
+session: Session = requests.session()
 
 ocr = ddddocr.DdddOcr()
-get_validate_code = session.get(
-    f'https://centro.zjlll.net/ajax?time={time.time() * 1000}&service=%2Fcentro%2Fapi%2Fauthcode%2Fcreate&params=',
-    verify=False)
+get_validate_code = session.get(url=LOGIN_PAGE_URL,
+                                headers=HEADERS,
+                                params=LOGIN_PAGE_PARAMETERS)
+logger.debug(get_validate_code.text)
 
 img_base64 = get_validate_code.json()['data']['image']
 validate_id = get_validate_code.json()['data']['id']
@@ -35,7 +38,7 @@ login_form = {
     'captchaCode': validate_code,
     'captchaId': validate_id,
     'redirect_url': 'https://www.zjooc.com',
-    'app_key': app_key,
+    'app_key': APP_KEY,
 }
 
 do_login = session.post('https://centro.zjlll.net/login/doLogin',
