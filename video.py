@@ -31,20 +31,25 @@ captcha_id = captcha_data['id']
 # 验证码识别结果
 captcha_code = ocr.classification(base64.b64decode((captcha_data["image"])))
 
-login_data = {
+# 登陆信息表单
+login_form = {
     'login_name': username,
     'password': password,
     'captchaCode': captcha_code,
     'captchaId': captcha_id,
-    'redirect_url': 'https://www.zjooc.com',
+    'redirect_url': REDIRECT_URL,
     'app_key': APP_KEY,
 }
 
-do_login = session.post('https://centro.zjlll.net/login/doLogin',
-                        data=login_data,
-                        verify=False)
-logger.info(do_login.text)
-authorization_code = do_login.json()['authorization_code']
+# 发送登陆POST请求
+do_login = session.post(LOGIN_POST_URL, data=login_form)
+if (do_login.json()['resultCode'] == 0):
+    logger.info('用户登录成功')
+else:
+    logger.error('用户登录失败')
+
+# 获取授权码
+authorization_code = do_login.json()['authorization_code']  # 这个授权码是不变的
 
 session.get(
     f'https://www.zjooc.cn/login?time={utils.generateRandomStringWithTimestamp(32)}'

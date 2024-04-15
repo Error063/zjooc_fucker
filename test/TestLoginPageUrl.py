@@ -1,7 +1,7 @@
+import requests
 import time
 
-# 请求头
-HEADERS: dict = {
+Headers: dict = {
     "Accept":
     "application/json, text/javascript, */*; q=0.01",
     "User-Agent":
@@ -9,14 +9,17 @@ HEADERS: dict = {
     "Chrome/111.0.0.0 Safari/537.36",
 }
 
-# login page
-# URL参数常量
-APP_KEY: str = '1ddadc7d-6f0a-4eb0-b844-24dd28e33e74'
-LOGIN_PAGE_URL = "https://centro.zjlll.net/ajax"
-LOGIN_PAGE_PARAMETERS: dict = {
+parameters: dict = {
     "time": time.time() * 1000,
     "service": "/centro/api/authcode/create",
     "params": ''
 }
-REDIRECT_URL = 'https://www.zjooc.cn'
-LOGIN_POST_URL = 'https://centro.zjlll.net/login/doLogin'
+
+URL = "https://centro.zjlll.net/ajax"
+
+# 打印get请求返回值
+
+if __name__ == '__main__':
+    session = requests.session()
+    response = session.get(URL, headers=Headers, params=parameters)
+    print(response.text)

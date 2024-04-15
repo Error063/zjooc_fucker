@@ -162,5 +162,5 @@ cython_debug/
 # user account information file 
 account.json
 
-# test code file directionary
-test/
+# # test code file directionary
+# test/
