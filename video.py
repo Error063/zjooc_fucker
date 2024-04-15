@@ -31,18 +31,18 @@ captcha_id = captcha_data['id']
 # 验证码识别结果
 captcha_code = ocr.classification(base64.b64decode((captcha_data["image"])))
 
-login_data = {
+# 登陆信息表单
+login_form = {
     'login_name': username,
     'password': password,
     'captchaCode': captcha_code,
     'captchaId': captcha_id,
-    'redirect_url': 'https://www.zjooc.com',
+    'redirect_url': REDIRECT_URL,
     'app_key': APP_KEY,
 }
 
-do_login = session.post('https://centro.zjlll.net/login/doLogin',
-                        data=login_data,
-                        verify=False)
+# 发送登陆POST请求
+do_login = session.post(LOGIN_POST_URL, data=login_form)
 logger.info(do_login.text)
 authorization_code = do_login.json()['authorization_code']
 
