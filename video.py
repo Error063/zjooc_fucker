@@ -22,27 +22,26 @@ with open('account.json') as f:
 session: Session = requests.session()
 
 ocr = ddddocr.DdddOcr()
-get_validate_code = session.get(url=LOGIN_PAGE_URL,
-                                headers=HEADERS,
-                                params=LOGIN_PAGE_PARAMETERS)
-logger.debug(get_validate_code.text)
+captcha_data = session.get(url=LOGIN_PAGE_URL,
+                           headers=HEADERS,
+                           params=LOGIN_PAGE_PARAMETERS).json().get('data')
 
-img_base64 = get_validate_code.json()['data']['image']
-validate_id = get_validate_code.json()['data']['id']
+# 验证码id
+captcha_id = captcha_data['id']
+# 验证码识别结果
+captcha_code = ocr.classification(base64.b64decode((captcha_data["image"])))
 
-validate_code = ocr.classification(img=base64.b64decode(img_base64))
-
-login_form = {
+login_data = {
     'login_name': username,
     'password': password,
-    'captchaCode': validate_code,
-    'captchaId': validate_id,
+    'captchaCode': captcha_code,
+    'captchaId': captcha_id,
     'redirect_url': 'https://www.zjooc.com',
     'app_key': APP_KEY,
 }
 
 do_login = session.post('https://centro.zjlll.net/login/doLogin',
-                        data=login_form,
+                        data=login_data,
                         verify=False)
 logger.info(do_login.text)
 authorization_code = do_login.json()['authorization_code']
