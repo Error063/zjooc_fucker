@@ -43,8 +43,13 @@ login_form = {
 
 # 发送登陆POST请求
 do_login = session.post(LOGIN_POST_URL, data=login_form)
-logger.info(do_login.text)
-authorization_code = do_login.json()['authorization_code']
+if (do_login.json()['resultCode'] == 0):
+    logger.info('用户登录成功')
+else:
+    logger.error('用户登录失败')
+
+# 获取授权码
+authorization_code = do_login.json()['authorization_code']  # 这个授权码是不变的
 
 session.get(
     f'https://www.zjooc.cn/login?time={utils.generateRandomStringWithTimestamp(32)}'
