@@ -1,5 +1,3 @@
-import time
-
 # 请求头
 HEADERS: dict = {
     "Accept":
@@ -13,10 +11,5 @@ HEADERS: dict = {
 # URL参数常量
 APP_KEY: str = '1ddadc7d-6f0a-4eb0-b844-24dd28e33e74'
 LOGIN_PAGE_URL = "https://centro.zjlll.net/ajax"
-LOGIN_PAGE_PARAMETERS: dict = {
-    "time": time.time() * 1000,
-    "service": "/centro/api/authcode/create",
-    "params": ''
-}
 REDIRECT_URL = 'https://www.zjooc.cn'
 LOGIN_POST_URL = 'https://centro.zjlll.net/login/doLogin'
