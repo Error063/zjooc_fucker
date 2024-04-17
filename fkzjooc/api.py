@@ -1,5 +1,6 @@
 import base64
 import time
+import json
 
 import requests
 import ddddocr
@@ -356,8 +357,3 @@ class API:
 
         # 返回提交的JSON结果
         return submit_paper.json()
-
-
-if __name__ == "__main__":
-    account = ""
-    password = ""
