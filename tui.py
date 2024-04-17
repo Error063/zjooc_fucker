@@ -14,8 +14,8 @@ class InformationForm(Static):
         self.close_app_function = close_app_function
 
     def compose(self) -> ComposeResult:
-        yield Input(placeholder="your username", id="username")
-        yield Input(placeholder="your password", id="password")
+        yield Input(placeholder="your username", id="username", type="text")
+        yield Input(placeholder="your password", id="password", type="text")
         yield Button("Start", variant="success", id="Start")
 
     def on_input_changed(self, event: Input.Changed) -> None:
