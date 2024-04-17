@@ -3,7 +3,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Footer, Input, Header, Static, Button
 
 # 用户信息
-user_information: dict = {"username": "", "password": "", "totalPage": 1}
+user_information: dict = {"account": "", "password": "", "totalPage": 1}
 
 
 class InformationForm(Static):
@@ -14,13 +14,13 @@ class InformationForm(Static):
         self.close_app_function = close_app_function
 
     def compose(self) -> ComposeResult:
-        yield Input(placeholder="your username", id="username", type="text")
+        yield Input(placeholder="your account", id="account", type="text")
         yield Input(placeholder="your password", id="password", type="text")
         yield Button("Start", variant="success", id="Start")
 
     def on_input_changed(self, event: Input.Changed) -> None:
-        if event.input.id == "username":
-            user_information["username"] = event.value
+        if event.input.id == "account":
+            user_information["account"] = event.value
         elif event.input.id == "password":
             user_information["password"] = event.value
 

@@ -12,19 +12,26 @@ from constants import *
 
 logger = get_logger(__name__)
 
-with open('account.json') as f:
-    account = json.load(f)
-    username = account['username']
-    password = account['password']
-    total_page = account['totalPage']
+with open('account.json') as account_information_file:
+    account_information = json.load(account_information_file)
+    account = account_information['account']
+    password = account_information['password']
+    total_page = account_information['totalPage']
 
 # 开启会话
 session: Session = requests.session()
 
 ocr = ddddocr.DdddOcr()
+
+login_page_parameters: dict = {
+    "time": time.time() * 1000,
+    "service": "/centro/api/authcode/create",
+    "params": ''
+}
+
 captcha_data = session.get(url=LOGIN_PAGE_URL,
                            headers=HEADERS,
-                           params=LOGIN_PAGE_PARAMETERS).json().get('data')
+                           params=login_page_parameters).json().get('data')
 
 # 验证码id
 captcha_id = captcha_data['id']
@@ -33,7 +40,7 @@ captcha_code = ocr.classification(base64.b64decode((captcha_data["image"])))
 
 # 登陆信息表单
 login_form = {
-    'login_name': username,
+    'login_name': account,
     'password': password,
     'captchaCode': captcha_code,
     'captchaId': captcha_id,
