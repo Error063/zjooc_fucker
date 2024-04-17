@@ -47,6 +47,7 @@ if (do_login.json()['resultCode'] == 0):
     logger.info('用户登录成功')
 else:
     logger.error('用户登录失败')
+    exit()
 
 # 获取授权码
 authorization_code = do_login.json()['authorization_code']  # 这个授权码是不变的
