@@ -18,5 +18,5 @@ LOGIN_PAGE_PARAMETERS: dict = {
     "service": "/centro/api/authcode/create",
     "params": ''
 }
-REDIRECT_URL = 'https://www.zjooc.com'
+REDIRECT_URL = 'https://www.zjooc.cn'
 LOGIN_POST_URL = 'https://centro.zjlll.net/login/doLogin'
