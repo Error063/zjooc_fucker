@@ -47,6 +47,6 @@ class VideoApp(App):
 if __name__ == "__main__":
     VideoApp().run()
     # 运行刷课代码
-    with open('video.py', 'r') as code_file:
+    with open('video.py', 'r', encoding="utf8") as code_file:
         code = code_file.read()
     exec(code)
