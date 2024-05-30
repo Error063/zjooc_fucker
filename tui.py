@@ -88,4 +88,5 @@ if __name__ == "__main__":
     # 创建一个API对象
     api = API(account, password)
 
+    # 刷视频
     finish_video(api)
