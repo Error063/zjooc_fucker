@@ -119,7 +119,14 @@ class API:
         # 检查请求是否成功
         if course.status_code != 200:
             raise exceptions.APIException(course.text)  # 若请求失败，抛出API异常
+        """_summary_
 
+        Returns:
+            dict: 请求结果
+            1. check `success == True`
+            2. check `data`, data include all course information, it is a array of dict
+            3. check `data[index]["id"]` to get the course id
+        """
         return course.json()  # 返回请求结果的JSON数据
 
     def get_course_chapter_list(self, course_id: str) -> dict:
@@ -158,6 +165,14 @@ class API:
         if chapters.status_code != 200:
             raise exceptions.APIException(chapters.text)
         # 返回解析后的JSON数据
+        """_summary_
+
+        Returns:
+            dict: 课程章节列表的JSON数据
+            1. check `success == True`
+            2. check `data`, data include all chapter information, it is a array of dict
+            3. check `data[index]["id"]` to get the chapter id
+        """
         return chapters.json()
 
     def get_user_video_progress(self, course_id: str, chapter_id: str) -> dict:
