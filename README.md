@@ -3,13 +3,13 @@
 构建 docker image
 
 ```bash
-sudo docker build -t zjooc .
+docker build -t zjooc .
 ```
 
 运行 docker image
 
 ```bash
-sudo docker run -it --rm zjooc
+docker run -it --rm zjooc
 ```
 
 # 本地部署
